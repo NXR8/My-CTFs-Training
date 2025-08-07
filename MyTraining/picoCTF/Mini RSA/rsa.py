@@ -1,34 +1,27 @@
-from Crypto.Util.number import long_to_bytes
 
-def find_invpow(x, n):
-    """Find integer nth root of x using binary search.
-    
-    Args:
-        x: The number to find the root of
-        n: The degree of the root (e.g., 3 for cube root)
-    
-    Returns:
-        The integer nth root of x
-    """
-    # Find upper bound for binary search
+def long_to_bytes(n):
+    byte_array = bytearray()
+    while n > 0:
+        byte_array.append(n & 0xff)
+        n = n >> 8
+    return bytes(byte_array[::-1])
+
+
+def nth_root(x, n):
     high = 1
     while high ** n < x:
         high *= 2
-    
-    # Set lower bound to half of upper bound
     low = high // 2
-
-    # Binary search to find the nth root
-    while low < high:
+    while low <= high:
         mid = (low + high) // 2
-        if low < mid and mid**n < x:
-            low = mid
-        elif high > mid and mid**n > x:
-            high = mid
+        if mid ** n < x:
+            low = mid + 1
+        elif mid ** n > x:
+            high = mid - 1
         else:
             return mid
-    return mid + 1
-
+    return high
+    
 
 # RSA parameters (modulus, public exponent, ciphertext)
 N = 1615765684321463054078226051959887884233678317734892901740763321135213636796075462401950274602405095138589898087428337758445013281488966866073355710771864671726991918706558071231266976427184673800225254531695928541272546385146495736420261815693810544589811104967829354461491178200126099661909654163542661541699404839644035177445092988952614918424317082380174383819025585076206641993479326576180793544321194357018916215113009742654408597083724508169216182008449693917227497813165444372201517541788989925461711067825681947947471001390843774746442699739386923285801022685451221261010798837646928092277556198145662924691803032880040492762442561497760689933601781401617086600593482127465655390841361154025890679757514060456103104199255917164678161972735858939464790960448345988941481499050248673128656508055285037090026439683847266536283160142071643015434813473463469733112182328678706702116054036618277506997666534567846763938692335069955755244438415377933440029498378955355877502743215305768814857864433151287
@@ -40,7 +33,7 @@ c = 1220012318588871886132524757898884422174534558055593713309088304910273991073
 i = 0
 while True:
     # Try to find the cube root of (i*N + c)
-    m_candidate = find_invpow(i*N + c, e)
+    m_candidate = nth_root(i*N + c, e)
     
     # Convert the candidate message to bytes
     flag_candidate = long_to_bytes(m_candidate)
@@ -53,4 +46,3 @@ while True:
         print(flag)
         break
     i+=1
-
