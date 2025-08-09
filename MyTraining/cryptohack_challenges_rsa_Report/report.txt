@@ -187,3 +187,5 @@ The multiplicative inverse of 65537 modulo 8825645955362241406396259876575293003
 		decrypted = long_to_bytes(pt)
 		
 		print(decrypted)
+
+	flag: crypto{0n3_pr1m3_41n7_pr1m3_l0l}
